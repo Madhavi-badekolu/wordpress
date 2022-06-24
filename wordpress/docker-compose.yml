@@ -1,0 +1,41 @@
+version: '3'
+services:
+  db:
+    image: mariadb
+    container_name: wordpress_db
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: wordpressdemo
+      MYSQL_USER: wordpressdemo_user
+      MYSQL_PASSWORD: admin@123
+      MYSQL_ROOT_PASSWORD: root_admin@123
+  wordpress:
+    image: wordpress
+    container_name: wordpress_app
+    restart: always
+    depends_on: ['db']
+    ports: ['80:80']
+    links: ['db:db']
+    volumes:
+      - './wp-data:/var/www/html'
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: wordpressdemo
+      WORDPRESS_DB_USER: wordpressdemo_user
+      WORDPRESS_DB_PASSWORD: admin@123
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: php_myadmin
+    restart: always
+    depends_on: ['db']
+    ports: ['12000:80']
+    links: ['db:db']
+    environment:
+      - PMA_HOST=db
+      - PMA_USER=wordpressdemo_user
+      - PMA_PASSWORD=admin@123
+
+      
+volumes:
+   db_data: {}
